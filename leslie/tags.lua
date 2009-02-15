@@ -126,15 +126,15 @@ end
 class("WithNode", _M) (leslie.parser.Node)
 
 ---
-function WithNode:initialize(nodelist, filer_expression, alias)
+function WithNode:initialize(nodelist, filter_expression, alias)
   self.nodelist = nodelist
-  self.filer_expression = filer_expression
+  self.filter_expression = filter_expression
   self.alias = alias
 end
 
 ---
 function WithNode:render(context)
-  local new_context = context:filter(self.filer_expression)
+  local new_context = context:filter(self.filter_expression)
   local with_context = leslie.Context({[self.alias] = new_context.context})
 
   return self.nodelist:render(with_context)
