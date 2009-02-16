@@ -33,6 +33,18 @@ local tokens_result2 = {
   { type = leslie.parser.TOKEN_BLOCK, contents = "endif" },
 }
 
+local t3 = [[{ no comment }{# some comment #}{% if name %}Hello {{ name }}!{% endif %}]]
+
+local tokens_result3 = {
+  { type = leslie.parser.TOKEN_TEXT, contents = "{ no comment }" },
+  { type = leslie.parser.TOKEN_COMMENT, contents = "some comment" },
+  { type = leslie.parser.TOKEN_BLOCK, contents = "if name" },
+  { type = leslie.parser.TOKEN_TEXT, contents = "Hello " },
+  { type = leslie.parser.TOKEN_VAR, contents = "name" },
+  { type = leslie.parser.TOKEN_TEXT, contents = "!" },
+  { type = leslie.parser.TOKEN_BLOCK, contents = "endif" },
+}
+
 TestToken = {}
 
 function TestToken:setUp()
@@ -58,6 +70,25 @@ function TestLexer:test_tokenize()
   for i, token in ipairs(tokens) do
     assertEquals(token.token_type, tokens_result[i].type)
     assertEquals(token.contents, tokens_result[i].contents)
+  end
+end
+
+function TestLexer:test_tokenize_comments()
+  local tokens = self.lexer:tokenize("{ no comment }{# some comment #}")
+
+  assertEquals(#tokens, 2)
+  assertEquals(tokens[1].contents, "{ no comment }")
+  assertEquals(tokens[1].token_type, leslie.parser.TOKEN_TEXT)
+end
+
+function TestLexer:test_tokenize_comments2()
+  local tokens = self.lexer:tokenize(t3)
+
+  assertEquals(#tokens, #tokens_result)
+
+  for i, token in ipairs(tokens) do
+    assertEquals(token.token_type, tokens_result3[i].type)
+    assertEquals(token.contents, tokens_result3[i].contents)
   end
 end
 

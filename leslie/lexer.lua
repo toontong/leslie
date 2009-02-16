@@ -35,7 +35,17 @@ function Lexer:gen()
   for char in getnextchar do
     pos = pos + 1
     if intag then
-      if char == "}" then
+      if char == "#" then
+        local nextchar = getnextchar()
+        pos = pos + 1
+        -- comment token
+        if nextchar == "}" then
+          local contents = leslie.utils.strip(self.template:sub(last+2, pos-2))
+          coroutine.yield(contents, TOKEN_COMMENT)
+          intag = false
+          last = pos + 1
+        end
+      elseif char == "}" then
         local nextchar = getnextchar()
         pos = pos + 1
         -- variable token
@@ -48,7 +58,7 @@ function Lexer:gen()
       elseif char == "%" then
         local nextchar = getnextchar()
         pos = pos + 1
-        -- variable token
+        -- block token
         if nextchar == "}" then
           local contents = leslie.utils.strip(self.template:sub(last+2, pos-2))
           coroutine.yield(contents, TOKEN_BLOCK)
@@ -60,15 +70,9 @@ function Lexer:gen()
       if char == "{" then
         local nextchar = getnextchar()
         pos = pos + 1
-        -- variable token
-        if nextchar == "{" then
-          if pos > 2 then
-            coroutine.yield(self.template:sub(last, pos-2), TOKEN_TEXT)
-          end
-          intag = true
-          last = pos - 1
-        elseif nextchar == "%" then
-          if pos > 2 then
+        -- text token
+        if nextchar == "{" or nextchar == "%" or nextchar == "#" then
+          if pos > 2 and last < pos-1 then
             coroutine.yield(self.template:sub(last, pos-2), TOKEN_TEXT)
           end
           intag = true
