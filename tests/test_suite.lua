@@ -45,6 +45,9 @@ local tokens_result3 = {
   { type = leslie.parser.TOKEN_BLOCK, contents = "endif" },
 }
 
+local t4 = [[{% comment %}{% if name %}Hello {{ name }}!{% else %}What's your name?{% endif %}{% endcomment %}]]
+local t5 = [[{% comment %}{% if name %}Hello {{ name }}!{% else %}What's your name?{% endif %}]]
+
 TestToken = {}
 
 function TestToken:setUp()
@@ -158,6 +161,26 @@ function TestParser:test_next_token()
   assertEquals(next.contents, "Hello")
   assertEquals(next.token_type, leslie.parser.TOKEN_TEXT)
   assertEquals(#self.parser.tokens, size)
+end
+
+TestParser2 = {}
+
+function TestParser2:setUp()
+  self.lex = leslie.parser.Lexer()
+  self.parser = leslie.parser.Parser(self.lex:tokenize(t4))
+end
+
+function TestParser2:test_skip_past()
+  local nl, err = pcall(function() self.parser:parse() end)
+
+  assertEquals(err, nil)
+end
+
+function TestParser2:test_skip_past_error()
+  self.parser.tokens = self.lex:tokenize(t5)
+  local nl, err = pcall(function() self.parser:parse() end)
+
+  assertEquals(err ~= nil, true)
 end
 
 TestNodeList = {}
@@ -532,10 +555,19 @@ end
 
 function TestFirstOfNode:test_render4()
   local c = leslie.Context({ name = "", name2 = 0 })
-  
+
   self.node.vars[3] = "'default'"
 
   assertEquals(self.node:render(c), "default")
+end
+
+TestCommentNode = {}
+
+function TestCommentNode:test_render()
+  local node = leslie.tags.CommentNode("")
+  local c = leslie.Context({ name = "Leslie" })
+
+  assertEquals(node:render(c), "")
 end
 
 TestTemplate = {}

@@ -74,6 +74,8 @@ function ForNode:render(context)
   return table.concat(bits) or ""
 end
 
+class("CommentNode", _M) (leslie.parser.Node)
+
 class("FirstOfNode", _M) (leslie.parser.Node)
 
 ---
@@ -197,10 +199,9 @@ end
 
 ---
 function do_comment(parser, token)
-  parser:parse({"endcomment"})
-  parser:delete_first_token()
+  parser:skip_past("endcomment")
 
-  return leslie.parser.Node()
+  return CommentNode()
 end
 
 ---

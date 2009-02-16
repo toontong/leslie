@@ -116,6 +116,17 @@ function Parser:parse(parse_until)
 end
 
 ---
+function Parser:skip_past(end_tag)
+  while self.tokens[1] do
+    token = self:next_token()
+    if token.token_type == TOKEN_BLOCK and token.contents == end_tag then
+      do return end
+    end
+  end
+  error("End tag " .. end_tag .. " not found")
+end
+
+---
 function Parser:next_token()
   return table.remove(self.tokens, 1)
 end
