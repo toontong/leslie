@@ -114,7 +114,7 @@ end
 function IfEqualNode:render(context)
   local var_value = context:evaluate(self.var)
   local var2_value = context:evaluate(self.var2)
-print(self.mode, var_value, var2_value)
+
   if self.mode == 0 and var_value == var2_value or
     self.mode == 1 and var_value ~= var2_value then
     do return self.nodelist_true:render(context) end
