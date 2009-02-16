@@ -211,6 +211,18 @@ function TestContext:test_evaluate2()
   assertEquals(c:evaluate("user.name"), "Leslie")
 end
 
+function TestContext:test_evaluate3()
+  local c = leslie.Context({ user = { name = "Leslie" }})
+
+  assertEquals(c:evaluate("\"Leslie\""), "Leslie")
+end
+
+function TestContext:test_evaluate4()
+  local c = leslie.Context({ user = { name = "Leslie" }})
+
+  assertEquals(c:evaluate("'Leslie'"), "Leslie")
+end
+
 function TestContext:test_filter()
   local c = leslie.Context({ users = {{ name = "Leslie" }}})
   local list = c:filter("users")
@@ -334,6 +346,24 @@ function TestIfEqualNode:test_render_false()
   assertEquals(self.node:render(c), "Who is Leslie and who is Django?")
 end
 
+function TestIfEqualNode:test_render_true2()
+  local c = leslie.Context({ user1 = { name = "Leslie" }, user2 = { name = "Django"}})
+
+  self.node.var2 = "\"Leslie\""
+  assertEquals(self.node:render(c), "Hello Leslie and Django!")
+  self.node.var = "user2.name"
+  assertEquals(self.node:render(c), "Who is Leslie and who is Django?")
+end
+
+function TestIfEqualNode:test_render_false2()
+  local c = leslie.Context({ user1 = { name = "Leslie" }, user2 = { name = "Django"}})
+
+  self.node.var = "user2.name"
+  self.node.var2 = "\"Leslie\""
+
+  assertEquals(self.node:render(c), "Who is Leslie and who is Django?")
+end
+
 TestIfNotEqualNode = {}
 
 function TestIfNotEqualNode:setUp()
@@ -367,6 +397,22 @@ end
 
 function TestIfNotEqualNode:test_render_true()
   local c = leslie.Context({ user1 = { name = "Leslie" }, user2 = { name = "Django"}})
+
+  assertEquals(self.node:render(c), "Hello Leslie and Django!")
+end
+
+function TestIfNotEqualNode:test_render_false2()
+  local c = leslie.Context({ user1 = { name = "Leslie" }, user2 = { name = "Leslie"}})
+
+  self.node.var2 = "\"Leslie\""
+
+  assertEquals(self.node:render(c), "Who is Leslie and who is Leslie?")
+end
+
+function TestIfNotEqualNode:test_render_true2()
+  local c = leslie.Context({ user1 = { name = "Leslie" }, user2 = { name = "Django"}})
+
+  self.node.var2 = "\"Django\""
 
   assertEquals(self.node:render(c), "Hello Leslie and Django!")
 end
@@ -482,6 +528,14 @@ function TestFirstOfNode:test_render3()
   local c = leslie.Context({ name = "", name2 = "LESLIE" })
 
   assertEquals(self.node:render(c), "LESLIE")
+end
+
+function TestFirstOfNode:test_render4()
+  local c = leslie.Context({ name = "", name2 = 0 })
+  
+  self.node.vars[3] = "'default'"
+
+  assertEquals(self.node:render(c), "default")
 end
 
 TestTemplate = {}

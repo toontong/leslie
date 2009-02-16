@@ -86,9 +86,6 @@ function FirstOfNode:render(context)
   local value
 
   while self.vars[1] do
-    if self.vars[1]:sub(1, 1) == "\"" then
-      do return self.vars[1]:sub(2, -2) end
-    end
     value = context:evaluate(self.vars[1])
     if value ~= nil and value ~= "" and value ~= 0 then
       do return value end

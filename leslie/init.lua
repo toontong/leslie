@@ -38,6 +38,12 @@ end
 ---
 function Context:evaluate(filter)
 
+  local start_char = filter:sub(1, 1)
+
+  if start_char == "\"" or start_char == "'" then
+    do return filter:sub(2, -2) end
+  end
+
   local new = {}
   local filter = leslie.utils.split(filter, leslie.parser.VARIABLE_ATTRIBUTE_SEPARATOR)
   local last = table.remove(filter)
