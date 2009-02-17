@@ -61,7 +61,7 @@ function ForNode:render(context)
       local copy = loop_context
       loop_context = leslie.Context({forloop = forloop_vars})
       for i, alias in ipairs(self.unpack_list) do
-      loop_context.context[alias] = copy[i]
+        loop_context.context[alias] = copy[i]
       end
     else
       loop_context = leslie.Context(
@@ -175,9 +175,7 @@ function do_for(parser, token)
     local arg
     for i=2, argc - 2 do
       arg = args[i]
-      if arg:sub(-1, 2) ~= "," and i < (argc - 2) then
-        error("for command: invalid arguments")
-      elseif i ~= (argc - 2) then
+      if arg:sub(-1) == "," then
         arg = arg:sub(1, -2)
       end
       table.insert(unpack_list, arg)
