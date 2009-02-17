@@ -48,6 +48,30 @@ local tokens_result3 = {
 local t4 = [[{% comment %}{% if name %}Hello {{ name }}!{% else %}What's your name?{% endif %}{% endcomment %}]]
 local t5 = [[{% comment %}{% if name %}Hello {{ name }}!{% else %}What's your name?{% endif %}]]
 
+local t6 = [[List of names:
+{% for name in names %}
+    {{ forloop.counter }}. {{ name }}
+{% endfor %}
+{% if location %}
+    My location is {{ location }}.
+{% endif %}]]
+
+local tokens_result6 = {
+  { type = leslie.parser.TOKEN_TEXT, contents = "List of names:\n" },
+  { type = leslie.parser.TOKEN_BLOCK, contents = "for name in names" },
+  { type = leslie.parser.TOKEN_TEXT, contents = "    " },
+   { type = leslie.parser.TOKEN_VAR, contents = "forloop.counter" },
+  { type = leslie.parser.TOKEN_TEXT, contents = ". " },
+  { type = leslie.parser.TOKEN_VAR, contents = "name" },
+  { type = leslie.parser.TOKEN_TEXT, contents = "\n" },
+  { type = leslie.parser.TOKEN_BLOCK, contents = "endfor" },
+  { type = leslie.parser.TOKEN_BLOCK, contents = "if location" },
+  { type = leslie.parser.TOKEN_TEXT, contents = "    My location is " },
+  { type = leslie.parser.TOKEN_VAR, contents = "location" },
+  { type = leslie.parser.TOKEN_TEXT, contents = ".\n" },
+  { type = leslie.parser.TOKEN_BLOCK, contents = "endif" },
+}
+
 TestToken = {}
 
 function TestToken:setUp()
@@ -87,11 +111,22 @@ end
 function TestLexer:test_tokenize_comments2()
   local tokens = self.lexer:tokenize(t3)
 
-  assertEquals(#tokens, #tokens_result)
+  assertEquals(#tokens, #tokens_result3)
 
   for i, token in ipairs(tokens) do
     assertEquals(token.token_type, tokens_result3[i].type)
     assertEquals(token.contents, tokens_result3[i].contents)
+  end
+end
+
+function TestLexer:test_whitespace_trim()
+  local tokens = self.lexer:tokenize(t6)
+
+  assertEquals(#tokens, #tokens_result6)
+
+  for i, token in ipairs(tokens) do
+    assertEquals(token.token_type, tokens_result6[i].type)
+    assertEquals(token.contents, tokens_result6[i].contents)
   end
 end
 
@@ -494,7 +529,7 @@ function TestForNode:test_loopvars()
       { chars = {"L","E","S","L","I","E"} }
     }
   })
-  local result = "1.1.L.1.2.e.1.3.s.1.4.l.1.5.i.1.6.e.\n2.1.L.2.2.E.2.3.S.2.4.L.2.5.I.2.6.E.\n"
+  local result = "1.1.L.1.2.e.1.3.s.1.4.l.1.5.i.1.6.e.2.1.L.2.2.E.2.3.S.2.4.L.2.5.I.2.6.E."
   self.node.nodelist = self.nl_subloop
   self.node.filter_expression = "names"
   self.node.unpack_list = {"name"}
@@ -584,6 +619,24 @@ function TestTemplate:test_render()
   local c = leslie.Context({ name = "Leslie" })
 
   assertEquals(self.template:render(c), "Hello Leslie!")
+end
+
+TestTemplate2 = {}
+
+function TestTemplate2:setUp()
+  self.template = leslie.Template(t6)
+end
+
+function TestTemplate2:test_render()
+  local c = leslie.Context({ names = { "Leslie", "Django" } })
+
+  assertEquals(self.template:render(c), "List of names:\n    1. Leslie\n    2. Django\n")
+end
+
+function TestTemplate2:test_render()
+  local c = leslie.Context({ names = { "Leslie", "Django" }, location = "nowhere" })
+
+  assertEquals(self.template:render(c), "List of names:\n    1. Leslie\n    2. Django\n    My location is nowhere.\n")
 end
 
 function test_loader()

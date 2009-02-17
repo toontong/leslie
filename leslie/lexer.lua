@@ -63,7 +63,11 @@ function Lexer:gen()
           local contents = leslie.utils.strip(self.template:sub(last+2, pos-2))
           coroutine.yield(contents, TOKEN_BLOCK)
           intag = false
-          last = pos + 1
+          if self.template:sub(pos+1, pos+1) == "\n" then
+            last = pos + 2
+          else
+            last = pos + 1
+          end
         end
       end
     else
