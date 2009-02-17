@@ -148,7 +148,7 @@ function do_if(parser, token)
     nodelist_false = parser:parse({"endif"})
     parser:delete_first_token()
   else
-    nodelist_false = NodeList({})
+    nodelist_false = leslie.parser.NodeList({})
   end
 
   local args = token:split_contents()
