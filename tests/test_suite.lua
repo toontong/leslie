@@ -490,6 +490,8 @@ function TestForNode:setUp()
   self.nl_subloop = p:parse()
   p.tokens = lex:tokenize("x={{ x }}, y={{ y }};")
   self.nl_argloop = p:parse()
+  p.tokens = lex:tokenize("{% for a, b, c in survey.questions %}{% endfor %}\n")
+  self.nl_unpack_forloop = p:parse()
 
   self.node = leslie.tags.ForNode(nl, nl_empty, "names", {"name"})
 end
@@ -511,6 +513,16 @@ function TestForNode:test_render_empty()
   local c = leslie.Context({ names = nil })
 
   assertEquals(self.node:render(c), "no items")
+end
+
+function TestForNode:test_unpack_list_parse()
+  local fornode = self.nl_unpack_forloop.nodes[1]
+
+  assertEquals(#fornode.unpack_list, 3)
+
+  assertEquals(fornode.unpack_list[1], "a")
+  assertEquals(fornode.unpack_list[2], "b")
+  assertEquals(fornode.unpack_list[3], "c")
 end
 
 function TestForNode:test_args()
