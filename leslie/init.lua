@@ -4,7 +4,7 @@ require "leslie.parser"
 
 module("leslie", package.seeall)
 
-version = "0.1a-pre"
+version = "0.1"
 
 class("Template", _M)
 

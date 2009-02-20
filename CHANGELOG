@@ -1,0 +1,23 @@
+# Leslie 0.1
+
+*release date 20-Feb-2009, revision 16*
+
+- Added support for comment block tags.
+
+- Complete API test suite.
+
+## Issues:
+
+- Fixed issues with compatibilty with Django Template System -
+  comparison of variables, condition evaluation, rendering.
+
+- Fixed evaluation of undefined context variables.
+
+- Lexer change - removing newline character after block tokens.
+
+- NodeList function was called from global environment insted of
+  leslie.parser module.
+
+- Mode attribute of class IfEqualNode was not set properly.
+
+- For tag parsing issues fixed.
