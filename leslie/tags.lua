@@ -15,11 +15,11 @@ end
 function IfNode:render(context)
   local cond_value = context:evaluate(self.cond_expression)
 
-  if cond_value ~= nil and cond_value ~= "" and cond_value ~= 0 then
+  if cond_value and cond_value ~= "" and cond_value ~= 0 then
     do return self.nodelist_true:render(context) end
   end
 
-  return self.nodelist_false:render(context) or ""
+  return self.nodelist_false:render(context)
 end
 
 class("ForNode", _M) (leslie.parser.Node)
@@ -41,7 +41,7 @@ function ForNode:render(context)
     do return self.nodelist_empty:render(context) end
   end
 
-  local unpack_mode = (#self.unpack_list > 1)
+  local unpack_mode = (#self.unpack_list > 1) and type(for_context.context[1]) == "table"
   local forloop_vars = {}
   local loops = #for_context.context
 
@@ -71,7 +71,7 @@ function ForNode:render(context)
     table.insert(bits, self.nodelist:render(loop_context))
   end
 
-  return table.concat(bits) or ""
+  return table.concat(bits)
 end
 
 class("CommentNode", _M) (leslie.parser.Node)
@@ -89,8 +89,8 @@ function FirstOfNode:render(context)
 
   while self.vars[1] do
     value = context:evaluate(self.vars[1])
-    if value ~= nil and value ~= "" and value ~= 0 then
-      do return value end
+    if value and value ~= "" and value ~= 0 then
+      do return tostring(value) end
     end
     table.remove(self.vars, 1)
   end
@@ -114,12 +114,17 @@ function IfEqualNode:render(context)
   local var_value = context:evaluate(self.var)
   local var2_value = context:evaluate(self.var2)
 
-  if self.mode == 0 and var_value == var2_value or
-    self.mode == 1 and var_value ~= var2_value then
+  local equal = var_value == var2_value or (
+          var_value == false and var2_value == 0 or
+          var_value == 0 and var2_value == false
+        )
+
+  if self.mode == 0 and equal or
+    self.mode == 1 and not equal then
     do return self.nodelist_true:render(context) end
   end
 
-  return self.nodelist_false:render(context) or ""
+  return self.nodelist_false:render(context)
 end
 
 class("WithNode", _M) (leslie.parser.Node)

@@ -23,7 +23,7 @@ end
 
 ---
 function TextNode:render(context)
-  return self.str or ""
+  return self.str
 end
 
 class("VariableNode", _M) (Node)
@@ -35,7 +35,8 @@ end
 
 ---
 function VariableNode:render(context)
-  return context:evaluate(self.filter_expression) or ""
+  local s = context:evaluate(self.filter_expression)
+  return tostring(s)
 end
 
 class("NodeList", _M)

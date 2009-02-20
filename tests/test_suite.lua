@@ -281,6 +281,18 @@ function TestContext:test_evaluate4()
   assertEquals(c:evaluate("'Leslie'"), "Leslie")
 end
 
+function TestContext:test_evaluate5_empty()
+  local c = leslie.Context({ user = { name = "Leslie" }})
+
+  assertEquals(c:evaluate("user.name.first"), "")
+end
+
+function TestContext:test_evaluate6_empty()
+  local c = leslie.Context({ user = { name = "Leslie" }})
+
+  assertEquals(c:evaluate("name"), nil)
+end
+
 function TestContext:test_filter()
   local c = leslie.Context({ users = {{ name = "Leslie" }}})
   local list = c:filter("users")
@@ -331,6 +343,28 @@ function TestVariableNode:test_render()
   local c = leslie.Context({ user = { name = "Leslie"}})
 
   assertEquals(self.node:render(c), "Leslie")
+end
+
+function TestVariableNode:test_render_booltype()
+  local c = leslie.Context({ user = { name = true }})
+
+  assertEquals(self.node:render(c), "true")
+  c.context.user.name = false
+  assertEquals(self.node:render(c), "false")
+end
+
+function TestVariableNode:test_render_numbertype()
+  local c = leslie.Context({ user = { name = 0 }})
+
+  assertEquals(self.node:render(c), "0")
+  c.context.user.name = 3
+  assertEquals(self.node:render(c), "3")
+end
+
+function TestVariableNode:test_render_empty()
+  local c = leslie.Context({ user = {}})
+
+  assertEquals(self.node:render(c), "nil")
 end
 
 TestIfNode = {}
@@ -608,6 +642,22 @@ function TestFirstOfNode:test_render4()
   assertEquals(self.node:render(c), "default")
 end
 
+function TestFirstOfNode:test_render5()
+  local c = leslie.Context({ name = false, name2 = 0 })
+
+  self.node.vars[3] = "'default'"
+
+  assertEquals(self.node:render(c), "default")
+end
+
+function TestFirstOfNode:test_render6()
+  local c = leslie.Context({ name = true, name2 = 0 })
+
+  self.node.vars[3] = "'default'"
+
+  assertEquals(self.node:render(c), "true")
+end
+
 TestCommentNode = {}
 
 function TestCommentNode:test_render()
@@ -649,6 +699,33 @@ function TestTemplate2:test_render()
   local c = leslie.Context({ names = { "Leslie", "Django" }, location = "nowhere" })
 
   assertEquals(self.template:render(c), "List of names:\n    1. Leslie\n    2. Django\n    My location is nowhere.\n")
+end
+
+TestConditions = {}
+
+function TestConditions:test_basic()
+  local t = leslie.Template("{% for c in cond %}{% if c %}TRUE{% else %}FALSE{% endif %} {% endfor %}")
+  local c = leslie.Context({ cond = { 0, "0", false, true, ""}})
+
+  assertEquals(t:render(c), "FALSE TRUE FALSE TRUE FALSE ")
+end
+
+function TestConditions:test_equal()
+  local t = leslie.Template("{% for cond in conditions %}{% ifequal cond.a cond.b %}TRUE{% else %}FALSE{% endifequal %} {% endfor %}")
+  local c = leslie.Context({ conditions = {
+	{ a = 0, b = "0" },
+	{ a = 0, b = "" },
+	{ a = 0, b = false },
+	{ a = 0, b = true },
+	{ a = "0", b = "" },
+	{ a = "0", b = false },
+	{ a = "0", b = true },
+	{ a = "", b = false },
+	{ a = "", b = true },
+        { a = "false", b = false },
+  }})
+
+  assertEquals(t:render(c), "FALSE FALSE TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE ")
 end
 
 function test_loader()
