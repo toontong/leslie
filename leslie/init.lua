@@ -44,7 +44,7 @@ function Context:evaluate(filter)
     do return filter:sub(2, -2) end
   end
 
-  local new = {}
+  local new = self.context
   local filter = leslie.utils.split(filter, leslie.parser.VARIABLE_ATTRIBUTE_SEPARATOR)
   local last = table.remove(filter)
 
@@ -62,8 +62,10 @@ function Context:evaluate(filter)
         new = new[var]
       end
     end
-  else
-    do return self.context[last] end
+  end
+
+  if type(new) ~= "table" then
+    do return "" end
   end
 
   return new[last]
