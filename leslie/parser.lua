@@ -8,11 +8,13 @@ VARIABLE_ATTRIBUTE_SEPARATOR = "."
 local registered_tags = {}
 
 ---
-function register_tag(name)
-    local tag = "do_".. tostring(name)
-    local func = leslie.tags[tag]
+function register_tag(name, func)
+
+	if not func then
+    	func = leslie.tags["do_".. tostring(name)]
+	end
     
-    assert(func, "Undefined tag function ".. tag)
+    assert(func, "Undefined tag function ".. name)
     assert(type(func) == "function", "Invalid tag function ".. name)
     
     registered_tags[tostring(name)] = func
