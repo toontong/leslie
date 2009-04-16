@@ -218,28 +218,44 @@ end
 
 ---
 function do_ifequal(parser, token)
-  local nodelist_true = parser:parse({"else", "endifequal", "endifnotequal"})
+  local nodelist_true = parser:parse({"else", "endifequal"})
   local nodelist_false
 
   if parser:next_token():split_contents()[1] == "else" then
-    nodelist_false = parser:parse({"endifequal", "endifnotequal"})
+    nodelist_false = parser:parse({"endifequal"})
     parser:delete_first_token()
   else
     nodelist_false = leslie.parser.NodeList({})
   end
 
   local args = token:split_contents()
-  local mode = 0
-
-  if args[1] == "ifnotequal" then
-    mode = 1
-  end
 
   if #args > 3 then
     error("ifequal command: to many arguments")
   end
 
-  return IfEqualNode(nodelist_true, nodelist_false, args[2], args[3], mode)
+  return IfEqualNode(nodelist_true, nodelist_false, args[2], args[3], 0)
+end
+
+---
+function do_ifnotequal(parser, token)
+  local nodelist_true = parser:parse({"else", "endifnotequal"})
+  local nodelist_false
+
+  if parser:next_token():split_contents()[1] == "else" then
+    nodelist_false = parser:parse({"endifnotequal"})
+    parser:delete_first_token()
+  else
+    nodelist_false = leslie.parser.NodeList({})
+  end
+
+  local args = token:split_contents()
+
+  if #args > 3 then
+    error("ifequal command: to many arguments")
+  end
+
+  return IfEqualNode(nodelist_true, nodelist_false, args[2], args[3], 1)
 end
 
 ---
@@ -257,3 +273,14 @@ function do_with(parser, token)
 
   return WithNode(nodelist, args[2], args[4])
 end
+
+local register_tag = leslie.parser.register_tag
+
+-- register builtin tags
+register_tag("if")
+register_tag("for")
+register_tag("comment")
+register_tag("firstof")
+register_tag("ifequal")
+register_tag("ifnotequal")
+register_tag("with")

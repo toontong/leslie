@@ -3,7 +3,20 @@ require "leslie.lexer"
 
 module("leslie.parser", package.seeall)
 
-VARIABLE_ATTRIBUTE_SEPARATOR = '.'
+VARIABLE_ATTRIBUTE_SEPARATOR = "."
+
+local registered_tags = {}
+
+---
+function register_tag(name)
+    local tag = "do_".. tostring(name)
+    local func = leslie.tags[tag]
+    
+    assert(func, "Undefined tag function ".. tag)
+    assert(type(func) == "function", "Invalid tag function ".. name)
+    
+    registered_tags[tostring(name)] = func
+end
 
 class("Node", _M)
 
@@ -11,8 +24,6 @@ class("Node", _M)
 function Node:render()
   return ""
 end
-
-require "leslie.tags"
 
 class("TextNode", _M) (Node)
 
@@ -69,15 +80,7 @@ class("Parser", _M)
 ---
 function Parser:initialize(tokens)
   self.tokens = tokens
-  self.tags = {
-    ["if"] = leslie.tags.do_if,
-    ["for"] = leslie.tags.do_for,
-    ["comment"] = leslie.tags.do_comment,
-    ["firstof"] = leslie.tags.do_firstof,
-    ["ifequal"] = leslie.tags.do_ifequal,
-    ["ifnotequal"] = leslie.tags.do_ifequal,
-    ["with"] = leslie.tags.do_with,
-  }
+  self.tags = registered_tags
 end
 
 ---

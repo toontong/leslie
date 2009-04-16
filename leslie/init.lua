@@ -1,10 +1,11 @@
 require "leslie.utils"
 require "leslie.class-leslie0"
 require "leslie.parser"
+require "leslie.tags"
 
 module("leslie", package.seeall)
 
-version = "0.1"
+version = "0.2a-pre"
 
 class("Template", _M)
 
