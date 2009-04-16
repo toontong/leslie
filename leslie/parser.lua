@@ -9,15 +9,35 @@ local registered_tags = {}
 
 ---
 function register_tag(name, func)
+  if not func then
+	  func = leslie.tags["do_".. tostring(name)]
+  end
+    
+  assert(func, "Undefined tag function ".. name)
+  assert(type(func) == "function", "Invalid tag function ".. name)
 
-	if not func then
-    	func = leslie.tags["do_".. tostring(name)]
-	end
-    
-    assert(func, "Undefined tag function ".. name)
-    assert(type(func) == "function", "Invalid tag function ".. name)
-    
-    registered_tags[tostring(name)] = func
+  registered_tags[tostring(name)] = func
+end
+
+---
+local function nodelist_iterator(nodelist, type)  
+  for i, node in ipairs(nodelist.nodes) do
+    if not type or node:instanceof(type) then
+      coroutine.yield(i, node, nodelist)
+      if node.nodelist then
+        nodelist_iterator(node.nodelist, type)
+      end
+    end
+  end
+end
+
+---
+local function findByType(nodelist, type)
+  assert(type, "Node type not specified")
+  
+  return coroutine.wrap(function()
+    nodelist_iterator(nodelist, type)
+  end)
 end
 
 class("Node", _M)
@@ -57,6 +77,11 @@ class("NodeList", _M)
 ---
 function NodeList:initialize()
   self.nodes = {}
+end
+
+---
+function NodeList:findByType(type)
+  return findByType(self, type)
 end
 
 ---
