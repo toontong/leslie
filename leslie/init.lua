@@ -2,6 +2,7 @@ require "leslie.utils"
 require "leslie.class-leslie0"
 require "leslie.parser"
 require "leslie.tags"
+require "leslie.loader_tags"
 
 module("leslie", package.seeall)
 
