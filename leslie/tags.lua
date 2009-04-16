@@ -2,6 +2,17 @@ require "leslie.class-leslie0"
 
 module("leslie.tags", package.seeall)
 
+local tags_map = {
+    openblock = leslie.parser.BLOCK_TAG_START,
+    closeblock = leslie.parser.BLOCK_TAG_END,
+    openvariable = leslie.parser.VARIABLE_TAG_START,
+    closevariable = leslie.parser.VARIABLE_TAG_END,
+    openbrace = leslie.parser.SINGLE_BRACE_START,
+    closebrace = leslie.parser.SINGLE_BRACE_END,
+    opencomment = leslie.parser.COMMENT_TAG_START,
+    closecomment = leslie.parser.COMMENT_TAG_END
+}
+
 class("IfNode", _M) (leslie.parser.Node)
 
 ---
@@ -274,6 +285,14 @@ function do_with(parser, token)
   return WithNode(nodelist, args[2], args[4])
 end
 
+---
+function do_templatetag(parser, token)
+  local args = token:split_contents()
+  assert(tags_map[args[2]], "Unknown template tag name")
+
+  return leslie.parser.TextNode(tags_map[args[2]])
+end
+
 local register_tag = leslie.parser.register_tag
 
 -- register builtin tags
@@ -284,3 +303,4 @@ register_tag("firstof")
 register_tag("ifequal")
 register_tag("ifnotequal")
 register_tag("with")
+register_tag("templatetag")

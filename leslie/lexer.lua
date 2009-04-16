@@ -8,6 +8,15 @@ TOKEN_VAR = 1
 TOKEN_BLOCK = 2
 TOKEN_COMMENT = 3
 
+BLOCK_TAG_START = '{%'
+BLOCK_TAG_END = '%}'
+VARIABLE_TAG_START = '{{'
+VARIABLE_TAG_END = '}}'
+COMMENT_TAG_START = '{#'
+COMMENT_TAG_END = '#}'
+SINGLE_BRACE_START = '{'
+SINGLE_BRACE_END = '}'
+
 class("Token", _M)
 
 ---
@@ -39,17 +48,17 @@ function Lexer:gen()
         local nextchar = getnextchar()
         pos = pos + 1
         -- comment token
-        if nextchar == "}" then
+        if nextchar == SINGLE_BRACE_END then
           local contents = leslie.utils.strip(self.template:sub(last+2, pos-2))
           coroutine.yield(contents, TOKEN_COMMENT)
           intag = false
           last = pos + 1
         end
-      elseif char == "}" then
+      elseif char == SINGLE_BRACE_END then
         local nextchar = getnextchar()
         pos = pos + 1
         -- variable token
-        if nextchar == "}" then
+        if nextchar == SINGLE_BRACE_END then
           local contents = leslie.utils.strip(self.template:sub(last+2, pos-2))
           coroutine.yield(contents, TOKEN_VAR)
           intag = false
@@ -59,7 +68,7 @@ function Lexer:gen()
         local nextchar = getnextchar()
         pos = pos + 1
         -- block token
-        if nextchar == "}" then
+        if nextchar == SINGLE_BRACE_END then
           local contents = leslie.utils.strip(self.template:sub(last+2, pos-2))
           coroutine.yield(contents, TOKEN_BLOCK)
           intag = false
@@ -71,11 +80,11 @@ function Lexer:gen()
         end
       end
     else
-      if char == "{" then
+      if char == SINGLE_BRACE_START then
         local nextchar = getnextchar()
         pos = pos + 1
         -- text token
-        if nextchar == "{" or nextchar == "%" or nextchar == "#" then
+        if nextchar == SINGLE_BRACE_START or nextchar == "%" or nextchar == "#" then
           if pos > 2 and last < pos-1 then
             coroutine.yield(self.template:sub(last, pos-2), TOKEN_TEXT)
           end
