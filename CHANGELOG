@@ -1,3 +1,14 @@
+# Leslie 0.2a-pre
+
+*release date 17-Apr-2009, revision 23*
+
+- Support for custom tags.
+
+- Added loader tags: extends, block, include and ssi tag.
+
+- Added templatetag tag.
+
+
 # Leslie 0.1
 
 *release date 20-Feb-2009, revision 16*

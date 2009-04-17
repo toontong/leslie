@@ -6,14 +6,20 @@ Leslie dependencies:
 
 Supported tags:
 
+- block
 - comment
 - empty
+- extends
 - for
 - firstof
+- include
 - if (partly)
 - ifequal
 - ifnotequal
+- ssi
+- templatetag
 - with
+
 
 Filters are currently not supported.
 
