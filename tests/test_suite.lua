@@ -667,6 +667,107 @@ function TestCommentNode:test_render()
   assertEquals(node:render(c), "")
 end
 
+TestExtendsNode = {}
+
+function TestExtendsNode:setUp() end
+
+function TestExtendsNode:test_render()
+  local t = leslie.Template([[{% extends "base.txt" %}{% block meta %}Author: Gregor Mazovec{% endblock %}]])
+  assertEquals(t:render({title="Leslie template"}), "Leslie template\nAuthor: Gregor Mazovec")
+end
+
+function TestExtendsNode:test_render2()
+  local t = leslie.Template([[{% extends base %}{% block head %}{{ title }}{% endblock %}]])
+  assertEquals(t:render({title="Leslie template", base="base.txt"}), "Leslie template")
+end
+
+TestBlockNode = {}
+
+function TestBlockNode:setUp() end
+
+function TestBlockNode:test_render()
+  local t = leslie.Template([[{% block test %}Leslie template{% endblock %}]])
+  assertEquals(t:render({}), "Leslie template")
+end
+
+function TestBlockNode:test_render2()
+  local lex = leslie.parser.Lexer()
+  local p = leslie.parser.Parser(lex:tokenize("{{ name }} template"))
+  local node = leslie.tags.BlockNode("test", p:parse())
+  assertEquals(node:render(leslie.Context{name="Leslie"}), "Leslie template")
+end
+
+TestIncludeNode = {}
+
+function TestIncludeNode:setUp() end
+
+function TestIncludeNode:test_render()
+  local t = leslie.Template([[{% include "template.txt" %}]])
+  assertEquals(t:render({name="Leslie"}), "Hello Leslie!\n") 
+end
+
+function TestIncludeNode:test_render2()
+  local t = leslie.Template([[{% include template %}]])
+  assertEquals(t:render({name="Leslie", template="template.txt"}), "Hello Leslie!\n") 
+end
+
+--[[
+TestSsi = {}
+
+function TestSsi:setUp()
+  self.template = leslie.Template("{% ssi template.txt %}")
+end
+
+function TestSsi:test_config()
+  local r, err = pcall(function() return self.template:render({name="Leslie"}) end)
+  assertEquals(not err, false)
+end
+]]--
+
+TestTemplateTagNode = {}
+
+function TestTemplateTagNode:setUp() end
+
+function TestTemplateTagNode:test_tag1()
+  local t = leslie.Template("{% templatetag openblock %}")
+  assertEquals(t:render({}), leslie.parser.BLOCK_TAG_START)
+end
+
+function TestTemplateTagNode:test_tag2()
+  local t = leslie.Template("{% templatetag closeblock %}")
+  assertEquals(t:render({}), leslie.parser.BLOCK_TAG_END)
+end
+
+function TestTemplateTagNode:test_tag3()
+  local t = leslie.Template("{% templatetag openvariable %}")
+  assertEquals(t:render({}), leslie.parser.VARIABLE_TAG_START)
+end
+
+function TestTemplateTagNode:test_tag4()
+  local t = leslie.Template("{% templatetag closevariable %}")
+  assertEquals(t:render({}), leslie.parser.VARIABLE_TAG_END)
+end
+
+function TestTemplateTagNode:test_tag5()
+  local t = leslie.Template("{% templatetag openbrace %}")
+  assertEquals(t:render({}), leslie.parser.SINGLE_BRACE_START)
+end
+
+function TestTemplateTagNode:test_tag6()
+  local t = leslie.Template("{% templatetag closebrace %}")
+  assertEquals(t:render({}), leslie.parser.SINGLE_BRACE_END)
+end
+
+function TestTemplateTagNode:test_tag7()
+  local t = leslie.Template("{% templatetag opencomment %}")
+  assertEquals(t:render({}), leslie.parser.COMMENT_TAG_START)
+end
+
+function TestTemplateTagNode:test_tag8()
+  local t = leslie.Template("{% templatetag closecomment %}")
+  assertEquals(t:render({}), leslie.parser.COMMENT_TAG_END)
+end
+
 TestTemplate = {}
 
 function TestTemplate:setUp()
@@ -736,6 +837,26 @@ function test_loader()
   assertEquals(t:render(c), "Hello Leslie!\n")
 end
 
-TestFunctions = wrapFunctions('test_loader')
+function test_register_tag()
+  local t, err = pcall(function() return leslie.Template([[{% custom %}]]) end)
+  
+  assertEquals(not err, false)
+end
+
+function test_register_tag2()
+  
+  leslie.parser.register_tag("custom", function(parser, token)
+    return leslie.parser.TextNode("CUSTOM TAG")
+  end)
+  local t = leslie.Template([[{% custom %}]])
+  
+  assertEquals(t:render(leslie.Context({})), "CUSTOM TAG")
+end
+
+TestFunctions = wrapFunctions(
+  "test_loader",
+  "test_register_tag",
+  "test_register_tag2"
+)
 
 LuaUnit:run()
