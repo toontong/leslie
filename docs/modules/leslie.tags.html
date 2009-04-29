@@ -66,6 +66,10 @@
 	</li>
 
 	<li>
+		<a href="../files/loader_tags.html">loader_tags.lua</a>
+	</li>
+
+	<li>
 		<a href="../files/parser.html">parser.lua</a>
 	</li>
 
@@ -98,6 +102,26 @@
 
 <h2>Functions</h2>
 <table class="function_list">
+
+	<tr>
+	<td class="name" nowrap><a href="#BlockNode:initialize">BlockNode:initialize</a>&nbsp;(name, nodelist)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#BlockNode:render">BlockNode:render</a>&nbsp;(context)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#ExtendsNode:initialize">ExtendsNode:initialize</a>&nbsp;(nodelist, parent_name)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#ExtendsNode:render">ExtendsNode:render</a>&nbsp;(context)</td>
+	<td class="summary"> </td>
+	</tr>
 
 	<tr>
 	<td class="name" nowrap><a href="#FirstOfNode:initialize">FirstOfNode:initialize</a>&nbsp;(vars)</td>
@@ -140,7 +164,17 @@
 	</tr>
 
 	<tr>
-	<td class="name" nowrap><a href="#WithNode:initialize">WithNode:initialize</a>&nbsp;(nodelist, filer_expression, alias)</td>
+	<td class="name" nowrap><a href="#IncludeNode:initialize">IncludeNode:initialize</a>&nbsp;(template_name)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#IncludeNode:render">IncludeNode:render</a>&nbsp;(context)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#WithNode:initialize">WithNode:initialize</a>&nbsp;(nodelist, filter_expression, alias)</td>
 	<td class="summary"> </td>
 	</tr>
 
@@ -150,7 +184,17 @@
 	</tr>
 
 	<tr>
+	<td class="name" nowrap><a href="#do_block">do_block</a>&nbsp;(parser, token)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
 	<td class="name" nowrap><a href="#do_comment">do_comment</a>&nbsp;(parser, token)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#do_extends">do_extends</a>&nbsp;(parser, token)</td>
 	<td class="summary"> </td>
 	</tr>
 
@@ -175,6 +219,26 @@
 	</tr>
 
 	<tr>
+	<td class="name" nowrap><a href="#do_ifnotequal">do_ifnotequal</a>&nbsp;(parser, token)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#do_include">do_include</a>&nbsp;(parser, token)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#do_ssi">do_ssi</a>&nbsp;(parser, token)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#do_templatetag">do_templatetag</a>&nbsp;(parser, token)</td>
+	<td class="summary"> </td>
+	</tr>
+
+	<tr>
 	<td class="name" nowrap><a href="#do_with">do_with</a>&nbsp;(parser, token)</td>
 	<td class="summary"> </td>
 	</tr>
@@ -193,6 +257,117 @@
 
 <h2><a name="functions"></a>Functions</h2>
 <dl class="function">
+
+
+
+<dt><a name="BlockNode:initialize"></a><strong>BlockNode:initialize</strong>&nbsp;(name, nodelist)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  name: 
+	</li>
+	
+	<li>
+	  nodelist: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="BlockNode:render"></a><strong>BlockNode:render</strong>&nbsp;(context)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  context: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="ExtendsNode:initialize"></a><strong>ExtendsNode:initialize</strong>&nbsp;(nodelist, parent_name)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  nodelist: 
+	</li>
+	
+	<li>
+	  parent_name: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="ExtendsNode:render"></a><strong>ExtendsNode:render</strong>&nbsp;(context)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  context: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
 
 
 
@@ -440,7 +615,58 @@
 
 
 
-<dt><a name="WithNode:initialize"></a><strong>WithNode:initialize</strong>&nbsp;(nodelist, filer_expression, alias)</dt>
+<dt><a name="IncludeNode:initialize"></a><strong>IncludeNode:initialize</strong>&nbsp;(template_name)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  template_name: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="IncludeNode:render"></a><strong>IncludeNode:render</strong>&nbsp;(context)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  context: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+<dt><a name="WithNode:initialize"></a><strong>WithNode:initialize</strong>&nbsp;(nodelist, filter_expression, alias)</dt>
 <dd>
 
 
@@ -453,7 +679,7 @@
 	</li>
 	
 	<li>
-	  filer_expression: 
+	  filter_expression: 
 	</li>
 	
 	<li>
@@ -500,6 +726,34 @@
 
 
 
+<dt><a name="do_block"></a><strong>do_block</strong>&nbsp;(parser, token)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  parser: 
+	</li>
+	
+	<li>
+	  token: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
 <dt><a name="do_comment"></a><strong>do_comment</strong>&nbsp;(parser, token)</dt>
 <dd>
 
@@ -527,6 +781,36 @@
 
 </dd>
 
+
+
+
+
+<dt><a name="do_extends"></a><strong>do_extends</strong>&nbsp;(parser, token)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  parser: 
+	</li>
+	
+	<li>
+	  token: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
 
 
 
@@ -647,6 +931,122 @@
 
 </dd>
 
+
+
+
+<dt><a name="do_ifnotequal"></a><strong>do_ifnotequal</strong>&nbsp;(parser, token)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  parser: 
+	</li>
+	
+	<li>
+	  token: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="do_include"></a><strong>do_include</strong>&nbsp;(parser, token)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  parser: 
+	</li>
+	
+	<li>
+	  token: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="do_ssi"></a><strong>do_ssi</strong>&nbsp;(parser, token)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  parser: 
+	</li>
+	
+	<li>
+	  token: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+<dt><a name="do_templatetag"></a><strong>do_templatetag</strong>&nbsp;(parser, token)</dt>
+<dd>
+
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  parser: 
+	</li>
+	
+	<li>
+	  token: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
 
 
 

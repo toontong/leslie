@@ -6,7 +6,7 @@ require "leslie.loader_tags"
 
 module("leslie", package.seeall)
 
-version = "0.2a-pre"
+version = "0.2"
 
 class("Template", _M)
 
