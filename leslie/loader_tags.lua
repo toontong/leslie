@@ -8,7 +8,9 @@ local function check_include_path(path)
     do return false end
   end
   
-  -- check ../ or ./
+  if path:match("%.%./") or path:match("%./") then
+    do return false end
+  end
   
   return true
 end
