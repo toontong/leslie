@@ -853,10 +853,26 @@ function test_register_tag2()
   assertEquals(t:render(leslie.Context({})), "CUSTOM TAG")
 end
 
+function test_scope()
+  local t = leslie.Template([[{% with some.var_withlongname as local %}{{ local }} and {{ global }}{% endwith %}]])
+  local c = leslie.Context({ global = "Global", some = { var_withlongname = "Local" } })
+
+  assertEquals(t:render(c), "Local and Global")
+end
+
+function test_scope2()
+  local t = leslie.Template([[{% for name in names %}{{ forloop.counter }}.{{ global }}: {{ name }}{% endfor %}]])
+  local c = leslie.Context({ global = "name", names = { "Leslie" } })
+
+  assertEquals(t:render(c), "1.name: Leslie")
+end
+
 TestFunctions = wrapFunctions(
   "test_loader",
   "test_register_tag",
-  "test_register_tag2"
+  "test_register_tag2",
+  "test_scope",
+  "test_scope2"
 )
 
 LuaUnit:run()
