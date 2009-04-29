@@ -67,19 +67,18 @@ function ForNode:render(context)
     forloop_vars.revcounter0 = loops - i
     forloop_vars.first = (i == 1)
     forloop_vars.last = (i == loops)
+    
+    context.context.forloop = forloop_vars
 
     if unpack_mode then
-      local copy = loop_context
-      loop_context = leslie.Context({forloop = forloop_vars})
       for i, alias in ipairs(self.unpack_list) do
-        loop_context.context[alias] = copy[i]
+        context.context[alias] = loop_context[i]
       end
     else
-      loop_context = leslie.Context(
-        {[self.unpack_list[1]] = loop_context, forloop = forloop_vars}
-      )
+      context.context[self.unpack_list[1]] = loop_context
     end
-    table.insert(bits, self.nodelist:render(loop_context))
+
+    table.insert(bits, self.nodelist:render(context))
   end
 
   return table.concat(bits)
@@ -149,10 +148,10 @@ end
 
 ---
 function WithNode:render(context)
-  local new_context = context:filter(self.filter_expression)
-  local with_context = leslie.Context({[self.alias] = new_context.context})
+  local with_context = context:filter(self.filter_expression)  
+  context.context[self.alias] = with_context.context
 
-  return self.nodelist:render(with_context)
+  return self.nodelist:render(context)
 end
 
 ---
