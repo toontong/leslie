@@ -711,19 +711,6 @@ function TestIncludeNode:test_render2()
   assertEquals(t:render({name="Leslie", template="template.txt"}), "Hello Leslie!\n") 
 end
 
---[[
-TestSsi = {}
-
-function TestSsi:setUp()
-  self.template = leslie.Template("{% ssi template.txt %}")
-end
-
-function TestSsi:test_config()
-  local r, err = pcall(function() return self.template:render({name="Leslie"}) end)
-  assertEquals(not err, false)
-end
-]]--
-
 TestTemplateTagNode = {}
 
 function TestTemplateTagNode:setUp() end
@@ -867,12 +854,31 @@ function test_scope2()
   assertEquals(t:render(c), "1.name: Leslie")
 end
 
+function test_ssi_include()
+  local r, err = pcall(function() return leslie.Template("{% ssi template.txt %}") end)
+  assertEquals(not err, false)
+end
+
+function test_ssi_include2()
+  leslie.ALLOWED_INCLUDE_ROOTS = true
+  local r, err = pcall(function() return leslie.Template("{% ssi template.txt %}") end)
+  assertEquals(not err, false)
+end
+
+function test_ssi_include3()
+  local r, err = pcall(function() return leslie.Template("{% ssi /home/leslie/../template.txt %}") end)
+  assertEquals(not err, false)
+end
+
 TestFunctions = wrapFunctions(
   "test_loader",
   "test_register_tag",
   "test_register_tag2",
   "test_scope",
-  "test_scope2"
+  "test_scope2",
+  "test_ssi_include",
+  "test_ssi_include2",
+  "test_ssi_include3"
 )
 
 LuaUnit:run()
