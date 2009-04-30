@@ -14,9 +14,23 @@ do
 end
 
 ---
-function split(str, sep)
+function split(str, sep, trim)
   str = str .. sep
-  return {str:match((str:gsub("[^"..sep.."]*"..sep, "([^"..sep.."]*)"..sep)))}
+  local bits = {str:match((str:gsub("[^"..sep.."]*"..sep, "([^"..sep.."]*)"..sep)))}
+  
+  if trim then
+    for i=1, #bits do
+      bits[i] = strip(bits[i])
+    end
+  end
+  
+  for i=1, #bits do
+    if bits[i]:sub(1, 1) == "\"" then
+      bits[i] = bits[i]:sub(2, -2)
+    end
+  end
+  
+  return bits
 end
 
 ---

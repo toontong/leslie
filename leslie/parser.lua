@@ -3,9 +3,12 @@ require "leslie.lexer"
 
 module("leslie.parser", package.seeall)
 
+FILTER_SEPARATOR = '|'
+FILTER_ARGUMENT_SEPARATOR = ':'
 VARIABLE_ATTRIBUTE_SEPARATOR = "."
 
 local registered_tags = {}
+local registered_filters = {}
 
 ---
 function register_tag(name, func)
@@ -17,6 +20,18 @@ function register_tag(name, func)
   assert(type(func) == "function", "Invalid tag function ".. name)
 
   registered_tags[tostring(name)] = func
+end
+
+---
+function register_filter(name, func)
+  if not func then
+	  func = leslie.filters[tostring(name)]
+  end
+    
+  assert(func, "Undefined filter function ".. name)
+  assert(type(func) == "function", "Invalid filter function ".. name)
+
+  registered_filters[tostring(name)] = func
 end
 
 ---
@@ -63,12 +78,27 @@ class("VariableNode", _M) (Node)
 
 ---
 function VariableNode:initialize(filter_expression)
-  self.filter_expression = filter_expression
+  local bits = leslie.utils.split(filter_expression, FILTER_SEPARATOR, true)
+  local filter
+  self.var_name = bits[1]
+  self.filter_expressions = {}
+  
+  for i=2, #bits do
+    filter = leslie.utils.split(bits[i], FILTER_ARGUMENT_SEPARATOR, true)
+    assert(registered_filters[filter[1]], "filter '" .. filter[1] .. "' unknown.")
+    filter[1] = registered_filters[filter[1]]
+    table.insert(self.filter_expressions, filter)
+  end
 end
 
 ---
 function VariableNode:render(context)
-  local s = context:evaluate(self.filter_expression)
+  local s = context:evaluate(self.var_name)
+
+  for _, filter in ipairs(self.filter_expressions) do
+    s = filter[1](s, filter[2])
+  end
+  
   return tostring(s)
 end
 
