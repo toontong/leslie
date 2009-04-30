@@ -1,3 +1,4 @@
+require "leslie.settings"
 require "leslie.utils"
 require "leslie.class-leslie0"
 require "leslie.parser"
