@@ -3,13 +3,23 @@ require "leslie.class-leslie0"
 module("leslie.tags", package.seeall)
 
 local function check_include_path(path)
-  if path:sub(1, 1) ~= "/" and
-   path:sub(3, 3) ~= "/" then
-    do return false end
+
+  if #leslie.settings.ALLOWED_INCLUDE_ROOTS == 0 then
+    error("SSI include ".. path .." not allowed")
+  end
+  
+  if path:sub(1, 1) ~= "/" and path:sub(3, 3) ~= "/" then
+    error("Path must be specified using an absolute path")
   end
   
   if path:match("%.%./") or path:match("%./") then
-    do return false end
+    error("Path must be specified using an absolute path")
+  end
+  
+  for _, root in ipairs(leslie.settings.ALLOWED_INCLUDE_ROOTS) do
+    if path:find(root) ~= 1 then
+      error("SSI include ".. path .." not allowed")
+    end
   end
   
   return true
@@ -100,11 +110,7 @@ function do_ssi(parser, token)
   local args = token:split_contents()
   local template_path = args[2]
   
-  assert(check_include_path(template_path), "Path must be specified using an absolute path")
-  
-  if not leslie.ALLOWED_INCLUDE_ROOTS then
-    error("SSI includes not allowed - check leslie.ALLOWED_INCLUDE_ROOTS variable")
-  end
+  check_include_path(template_path)
   
   if args[3] == "parsed" then
     do return leslie.loader(template_path) end
