@@ -2,6 +2,17 @@ require "lpeg"
 
 module("leslie.utils", package.seeall)
 
+local date_format_map = {
+  ["%"] = "",
+  ["N"] = "%b",
+  ["j"]= "%d",
+  ["Y"] = "%Y"
+}
+
+local time_format_map = {
+  ["P"] = "%I %p"
+}
+
 local smart_split_re
 
 do
@@ -46,4 +57,25 @@ function smart_split(s)
   end
 
   return lpeg.match(smart_split_re, s)
+end
+
+---
+function format_convert(format, map)
+  local str = {}
+  
+  for c in format:gmatch(".") do
+    str[#str+1] = map[c] or c
+  end
+  
+  return table.concat(str)
+end
+
+---
+function date_format_convert(format)
+  return format_convert(format, date_format_map)
+end
+
+---
+function time_format_convert(format)
+  return format_convert(format, time_format_map)
 end
