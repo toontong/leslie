@@ -105,10 +105,19 @@ end
 
 ---
 function loader(filename)
-  local file, err = io.open(filename, "r")
-
-  if err then
-    error("Template " .. filename .. " not found")
+  local file, err
+  
+  if #leslie.settings.TEMPLATE_DIRS > 0 then
+    for _, path in ipairs(leslie.settings.TEMPLATE_DIRS) do
+      file, err = io.open(path .."/".. filename)
+      if file then break end
+    end
+  else
+    file, err = io.open(filename)
+  end
+  
+  if not file then
+    error(err)
   end
 
   return Template(file:read("*a"))
