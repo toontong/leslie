@@ -138,6 +138,7 @@ class("Parser", _M)
 function Parser:initialize(tokens)
   self.tokens = tokens
   self.tags = registered_tags
+  self.filters = registered_filters
 end
 
 ---

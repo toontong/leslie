@@ -1,4 +1,6 @@
+require "leslie.settings"
 require "leslie.class-leslie0"
+require "leslie.utils"
 
 module("leslie.tags", package.seeall)
 
@@ -86,6 +88,24 @@ end
 
 class("CommentNode", _M) (leslie.parser.Node)
 
+class("FilterNode", _M) (leslie.parser.Node)
+
+---
+function FilterNode:initialize(nodelist, filters)
+  self.nodelist = nodelist
+  self.filters = filters
+end
+
+function FilterNode:render(context)
+  local s = self.nodelist:render(context)
+  
+  for _, filter in ipairs(self.filters) do
+    s = filter[1](s, filter[2])
+  end
+  
+  return s
+end
+
 class("FirstOfNode", _M) (leslie.parser.Node)
 
 ---
@@ -135,6 +155,18 @@ function IfEqualNode:render(context)
   end
 
   return self.nodelist_false:render(context)
+end
+
+class("NowNode", _M) (leslie.parser.Node)
+
+---
+function NowNode:initialize(format)
+  self.format = leslie.utils.date_format_convert(format)
+end
+
+---
+function NowNode:render()
+  return os.date(self.format, os.time())
 end
 
 class("WithNode", _M) (leslie.parser.Node)
@@ -292,6 +324,34 @@ function do_templatetag(parser, token)
   return leslie.parser.TextNode(tags_map[args[2]])
 end
 
+---
+function do_now(parser, token)
+  local args = token:split_contents()
+  
+  return NowNode(args[2] or leslie.settings.DATE_FORMAT)
+end
+
+---
+function do_filter(parser, token)
+  local args = token:split_contents()
+  
+  assert(args[2], "Bad argument")
+
+  local filters = {}
+  local nodelist = parser:parse({"endfilter"})
+  
+  parser:delete_first_token()
+  
+  for i, filter in ipairs(leslie.utils.split(args[2], leslie.parser.FILTER_SEPARATOR)) do
+    filter = leslie.utils.split(filter, leslie.parser.FILTER_ARGUMENT_SEPARATOR, true)
+    assert(parser.filters[filter[1]], "filter '" .. filter[1] .. "' unknown.")
+    filter[1] = parser.filters[filter[1]]
+    table.insert(filters, filter)
+  end
+  
+  return FilterNode(nodelist, filters)
+end
+
 local register_tag = leslie.parser.register_tag
 
 -- register builtin tags
@@ -303,3 +363,5 @@ register_tag("ifequal")
 register_tag("ifnotequal")
 register_tag("with")
 register_tag("templatetag")
+register_tag("now")
+register_tag("filter")
