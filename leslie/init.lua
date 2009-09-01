@@ -43,6 +43,7 @@ end
 function Context:evaluate(filter)
 
   local start_char = filter:sub(1, 1)
+  local TEMPLATE_STRING_IF_INVALID = leslie.settings.TEMPLATE_STRING_IF_INVALID
 
   if start_char == "\"" or start_char == "'" then
     do return filter:sub(2, -2) end
@@ -56,12 +57,12 @@ function Context:evaluate(filter)
     for i, var in ipairs(filter) do
       if i == 1 then
         if self.context[var] == nil then
-          do return nil end
+          do return TEMPLATE_STRING_IF_INVALID end
         end
         new = self.context[var]
       else
         if new[var] == nil then
-          do return nil end
+          do return TEMPLATE_STRING_IF_INVALID end
         end
         new = new[var]
       end
@@ -69,10 +70,10 @@ function Context:evaluate(filter)
   end
 
   if type(new) ~= "table" then
-    do return "" end
+    do return TEMPLATE_STRING_IF_INVALID end
   end
 
-  return new[last]
+  return new[last] or TEMPLATE_STRING_IF_INVALID
 end
 
 ---
