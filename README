@@ -1,3 +1,21 @@
+#About
+   Lua template engine like Django template language
+#Wath has done by toontong
+  - support {% if not values %}; 
+  - make test case 100%.
+  - make luajit supported.
+  - make Leslie run in [Openresty](http://openresty.org/)
+  - make some Filters supported.
+#TODO: 
+  - support: {% if var1 and var2 %}, if {% if var == 1 %}
+
+# anther template engine using Lua:
+  - [moochine](https://github.com/appwilldev/moochine)
+  - [stl2](https://github.com/henix/slt2)
+  - [lutem](https://github.com/daly88/lutem)
+  - [LuaWeb](https://github.com/torhve/LuaWeb)
+  
+-----
 Leslie dependencies:
 
 - lua 5.1
