@@ -72,7 +72,9 @@ function Context:evaluate(filter)
   if type(new) ~= "table" then
     do return TEMPLATE_STRING_IF_INVALID end
   end
-
+  -- if new.has_key(last)
+  if new[last] ~= nil then return new[last] end
+  
   return new[last] or TEMPLATE_STRING_IF_INVALID
 end
 

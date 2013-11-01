@@ -69,6 +69,7 @@ function u.assert(value,errmsg,...)
       error(errmsg,2)
     else
       --trying to call second arg
+      local arg = {...}
       error(errmsg(unpack(arg)),2)
     end
   end
@@ -77,6 +78,7 @@ end
 local assert = u.assert
 
 function u.fwrongarg(...)
+  local arg = {...}
   return function()
     return wrongarg(unpack(arg))
   end
@@ -84,11 +86,7 @@ end
 
 local fwrongarg = u.fwrongarg
 
-
-
-
 local INFO = '__info'
-
 
 function u.isobject(o)
   return type(o)=='table' and rawget(o,INFO)
@@ -96,11 +94,7 @@ end
 
 local isobject = u.isobject
 
-
-
-
 ---- METATABLE ----
-
 local METAMETHODS = {
   '__tostring',
   '__add',
@@ -117,13 +111,13 @@ local METAMETHODS = {
   '__newindex',
 }
 
-
 local metatable = {}
 
 for _, name in ipairs(METAMETHODS) do
   local name = name
   metatable[name] = function(...)
     ----
+    local arg = {...} 
     local a, b = unpack(arg)
     local f
     if isobject(a) then
@@ -273,33 +267,23 @@ function metatable:__index(name)
 end
 
 
-
-
-
 ---- OBJECT CLASS ----
-
 local _Object = table2object{}
 object2class(_Object,"Object")
 
 
-
 ---- CLASS CLASS ----
-
 local _Class = table2object{}
 object2class(_Class,"Class")
 
 
-
 ---- SETUP ----
-
 setclass(Object,Class)
 setclass(Class,Class)
 setsuper(Class,Object)
 
 
-
 ---- INSTANCE/CLASS METHOD REGISTRATION ----
-
 local
 function makesupermethod(self,name,iscmethod)
   return function(...)
@@ -323,6 +307,7 @@ end
 local methodsmeta = {}
 
 function methodsmeta:__call(object,...)
+  local arg = {...}
   local env = getfenv(self.__f)
   local metafenv = {
     __newindex = env,
@@ -363,6 +348,7 @@ rawget(Class,INFO).__methods.__newindex =
 -- CLASS METHODS --
 
 function Class:__call__(...)
+  local arg = {...}
   local instance = self:new(unpack(arg))
   instance:initialize(unpack(arg))
   return instance
@@ -430,6 +416,7 @@ function Class:adopt(t,initialize,...)
   local o = table2object(t)
   setclass(o,self)
   if initialize then
+    local arg = {...}
     o:initialize(unpack(arg))
   end
   return o
@@ -553,12 +540,7 @@ end
 --Object:superclasses()
 
 
-
-
-
-
 -- weak class list ?
-
 
 
 function class(name, env)

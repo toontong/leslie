@@ -1,5 +1,10 @@
-require "leslie"
-require "luaunit"
+package.path = package.path .. ";../?/init.lua" -- for require "leslie"
+
+leslie = require "leslie"
+LuaUnit = require "LuaUnit"
+
+leslie.settings.TEMPLATE_DIRS={"./tests", '.'} -- for run in parent or tests
+
 
 local t = [[{% if name %}Hello my name is {{ name }}.{% else %}Unknown name{% endif %}]]
 local tokens_result = {
@@ -284,13 +289,13 @@ end
 function TestContext:test_evaluate5_empty()
   local c = leslie.Context({ user = { name = "Leslie" }})
 
-  assertEquals(c:evaluate("user.name.first"), "")
+  assertEquals(c:evaluate("user.name.first"), leslie.settings.TEMPLATE_STRING_IF_INVALID)
 end
 
 function TestContext:test_evaluate6_empty()
   local c = leslie.Context({ user = { name = "Leslie" }})
 
-  assertEquals(c:evaluate("name"), nil)
+  assertEquals(c:evaluate("name"), leslie.settings.TEMPLATE_STRING_IF_INVALID)
 end
 
 function TestContext:test_filter()
@@ -336,12 +341,21 @@ function TestVariableNode:setUp()
 end
 
 function TestVariableNode:test_initialize()
-  assertEquals(self.node.filter_expression, "user.name")
+  assertEquals(self.node.var_name, "user.name")
+end
+
+function TestVariableNode:test_render_filter()
+  upper_filter_node = leslie.parser.VariableNode("user.name|upper")
+  local c = leslie.Context({ user = { name = "Leslie"}})
+  assertEquals(upper_filter_node:render(c), "LESLIE")
+  
+  lower_filter_node = leslie.parser.VariableNode("user.name|lower")
+  local c = leslie.Context({ user = { name = "Leslie"}})
+  assertEquals(lower_filter_node:render(c), "leslie")
 end
 
 function TestVariableNode:test_render()
   local c = leslie.Context({ user = { name = "Leslie"}})
-
   assertEquals(self.node:render(c), "Leslie")
 end
 
@@ -355,7 +369,6 @@ end
 
 function TestVariableNode:test_render_numbertype()
   local c = leslie.Context({ user = { name = 0 }})
-
   assertEquals(self.node:render(c), "0")
   c.context.user.name = 3
   assertEquals(self.node:render(c), "3")
@@ -363,8 +376,17 @@ end
 
 function TestVariableNode:test_render_empty()
   local c = leslie.Context({ user = {}})
+  assertEquals(self.node:render(c), leslie.settings.TEMPLATE_STRING_IF_INVALID)
 
-  assertEquals(self.node:render(c), "nil")
+  local src_TEMPLATE_STRING_IF_INVALID = leslie.settings.TEMPLATE_STRING_IF_INVALID
+  leslie.settings.TEMPLATE_STRING_IF_INVALID = ''
+  local c = leslie.Context({ user = nil})
+  assertEquals(self.node:render(c), leslie.settings.TEMPLATE_STRING_IF_INVALID)
+
+  leslie.settings.TEMPLATE_STRING_IF_INVALID = src_TEMPLATE_STRING_IF_INVALID
+
+  local c = leslie.Context({ user = 0})
+  assertEquals(self.node:render(c), leslie.settings.TEMPLATE_STRING_IF_INVALID)
 end
 
 TestIfNode = {}
@@ -389,16 +411,35 @@ function TestIfNode:test_initialize()
   assertEquals(self.node.cond_expression, "user.name")
 end
 
-function TestIfNode:test_render_true()
-  local c = leslie.Context({ user = { name = "Leslie"}})
+function TestIfNode:test_render_false()
+  -- in lua, just "false"£¬"nil" was Booleans false.
+  local c = leslie.Context({ user = { name = false }})
+  assertEquals(self.node:render(c), "Hello what's your name?")
 
-  assertEquals(self.node:render(c), "Hello Leslie!")
+  local c = leslie.Context({ user = { name = nil }})
+  assertEquals(self.node:render(c), "Hello what's your name?")
+
+  -- NOTE: zore, empty string was True in Lua, But in python was False
+  local c = leslie.Context({ user = { name = ""}})
+  assertEquals(self.node:render(c), "Hello what's your name?")
+
+  local c = leslie.Context({ user = { name = 0}})
+  assertEquals(self.node:render(c), "Hello what's your name?")
 end
 
-function TestIfNode:test_render_false()
-  local c = leslie.Context({ user = { name = nil }})
+function TestIfNode:test_render_true()
+  local c = leslie.Context({ user = { name = "Leslie"}})
+  assertEquals(self.node:render(c), "Hello Leslie!")
 
-  assertEquals(self.node:render(c), "Hello what's your name?")
+  -- in lua, just "false"£¬"nil" was Booleans false.
+  local c = leslie.Context({ user = { name = "0"}})
+  assertEquals(self.node:render(c), "Hello 0!")
+
+  -- NOTE: zore, empty string was True in Lua, But in python was False
+  local c = leslie.Context({ user = { name = -1}})
+  assertEquals(self.node:render(c), "Hello -1!")
+  local c = leslie.Context({ user = { name = 0.1}})
+  assertEquals(self.node:render(c), "Hello 0.1!")
 end
 
 TestIfEqualNode = {}
@@ -866,11 +907,11 @@ function test_ssi_include2()
 end
 
 function test_ssi_include3()
-  local r, err = pcall(function() return leslie.Template("{% ssi /home/leslie/../template.txt %}") end)
+  local r, err = pcall(function() return leslie.Template("{% ssi ./template.txt %}") end)
   assertEquals(not err, false)
 end
 
-TestFunctions = wrapFunctions(
+TestFunctions = LuaUnit.wrapFunctions(
   "test_loader",
   "test_register_tag",
   "test_register_tag2",

@@ -84,7 +84,7 @@ function VariableNode:initialize(filter_expression)
   self.filter_expressions = {}
   
   for i=2, #bits do
-    filter = leslie.utils.split(bits[i], FILTER_ARGUMENT_SEPARATOR, true)
+    filter = leslie.utils.split(bits[i], FILTER_ARGUMENT_SEPARATOR, true) -- string split with ':'
     assert(registered_filters[filter[1]], "filter '" .. filter[1] .. "' unknown.")
     filter[1] = registered_filters[filter[1]]
     table.insert(self.filter_expressions, filter)

@@ -28,7 +28,7 @@ end
 function IfNode:render(context)
   local cond_value = context:evaluate(self.cond_expression)
 
-  if cond_value and cond_value ~= "" and cond_value ~= 0 then
+  if cond_value and cond_value ~= leslie.settings.TEMPLATE_STRING_IF_INVALID and cond_value ~= 0 then
     do return self.nodelist_true:render(context) end
   end
 
@@ -182,10 +182,32 @@ end
 function WithNode:render(context)
   local with_context = context:filter(self.filter_expression)  
   context.context[self.alias] = with_context.context
-
   return self.nodelist:render(context)
 end
 
+
+function _dump_table(data)
+  function dump(data, prefix)
+    local str = tostring(data)
+    local prefix_next = prefix .. "  "
+    str = str .. "\n" .. prefix .. "{"
+    for k,v in pairs(data) do
+      str = str .. "\n" .. prefix_next .. k .. " = "
+      if type(v) == "table" then
+        str = str .. dump(v, prefix_next)
+      else
+        str = str .. tostring(v)
+      end
+    end
+    str = str .. "\n" .. prefix .. "}"
+    return str
+  end
+  return dump(data, "")
+end
+
+function print_tb(tb)
+    print(_dump_table(tb))
+end
 ---
 function do_if(parser, token)
   local nodelist_true = parser:parse({"else", "endif"})
@@ -199,8 +221,14 @@ function do_if(parser, token)
   end
 
   local args = token:split_contents()
-
+  -- #TODO: support {% if a and b %}, {% if a or b %}
+  if #args == 3 and args[2]== 'not' then
+    nodelist_true, nodelist_false = nodelist_false,nodelist_true
+    table.remove(args, 2)
+  end
+  
   if #args > 2 then
+    print_tb(args)
     error("if command: to many arguments")
   end
 
