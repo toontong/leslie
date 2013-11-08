@@ -6,162 +6,162 @@ module("leslie.filters", package.seeall)
 
 ---
 function add(var, arg)
-  return tonumber(var) + tonumber(arg)
+    return tonumber(var) + tonumber(arg)
 end
 
 ---
 function addslashes(var)
-  return var:gsub("\"", "\\\"")
+    return var:gsub("\"", "\\\"")
 end
 
 ---
 function capfirst(var)
-  return var:sub(1, 1):upper() .. var:sub(2)
+    return var:sub(1, 1):upper() .. var:sub(2)
 end
 
 ---
 function date(var, arg)
-  arg = arg or leslie.settings.DATE_FORMAT
+    arg = arg or leslie.settings.DATE_FORMAT
 
-  return os.date(leslie.utils.date_format_convert(arg), var)
+    return os.date(leslie.utils.date_format_convert(arg), var)
 end
 
 ---
 function default(var, arg)
-  if not var or var == "" or var == false or var == 0 then
-    do return arg end
-  end
-  return var
+    if not var or var == "" or var == false or var == 0 then
+        do return arg end
+    end
+    return var
 end
 
 ---
 function default_if_none(var, arg)
-  if var == nil then
-    do return arg end
-  end
-  return var
+    if var == nil then
+        do return arg end
+    end
+    return var
 end
 
 ---
 function divisibleby(var, arg)
-  return tonumber(var) % tonumber(arg) == 0
+    return tonumber(var) % tonumber(arg) == 0
 end
 
 ---
 function filesizeformat(var)
-  local size
-  local size_map = {"KB", "MB", "GB", "TB"}
-  
-  var = tonumber(var)
-  
-  for i=4, 1, -1 do
-    size = 1024^i
-    if var > size then
-      if i > 1 then
-        do return tostring(string.format("%.1f", var/ size)) .." ".. size_map[i] end
-      else
-        do return tostring(string.format("%.0f", var/ size)) .." ".. size_map[i] end
-      end
+    local size
+    local size_map = {"KB", "MB", "GB", "TB"}
+
+    var = tonumber(var)
+
+    for i=4, 1, -1 do
+        size = 1024^i
+        if var > size then
+            if i > 1 then
+                do return tostring(string.format("%.1f", var/ size)) .." ".. size_map[i] end
+            else
+                do return tostring(string.format("%.0f", var/ size)) .." ".. size_map[i] end
+            end
+        end
     end
-  end
-  
-  return tostring(var) .." bytes"
+
+    return tostring(var) .." bytes"
 end
 
 --
 function first(var)
-  return var[1]
+    return var[1]
 end
 
 ---
 function get_digit(var, arg)
-  var = tostring(var)
-  local pos = #var - tonumber(arg) + 1
-  
-  return var:sub(pos, pos)
+    var = tostring(var)
+    local pos = #var - tonumber(arg) + 1
+
+    return var:sub(pos, pos)
 end
 
 ---
 function join(var, arg)
-  return table.concat(var, args)
+    return table.concat(var, args)
 end
 
 ---
 function last(var)
-  return var[#var]
+    return var[#var]
 end
 
 ---
 function length(var)
-  if type(var) == "number" then
-    var = tostring(var)
-  end
-  
-  return #var
+    if type(var) == "number" then
+        var = tostring(var)
+    end
+
+    return #var
 end
 
 ---
 function length_is(var, arg)
-  return length(var) == tonumber(arg)
+    return length(var) == tonumber(arg)
 end
 
 ---
 function linebreaksbr(var)
-  return var:gsub("\n", "<br />")
+    return var:gsub("\n", "<br />")
 end
 
 ---
 function lower(var)
-  return var:lower()
+    return var:lower()
 end
 
 ---
 function random(var)
-  return var[math.random(1, #var)]
+    return var[math.random(1, #var)]
 end
 
 ---
 function slice(var, arg)
-  local t = {}
-  local s, e = unpack(leslie.utils.split(arg, ':'))
-  s, e = tonumber(s), tonumber(e)
-  
-  if not s then
-    s = 0
-  end
+    local t = {}
+    local s, e = unpack(leslie.utils.split(arg, ':'))
+    s, e = tonumber(s), tonumber(e)
 
-  if not e then
-    e = #var
-  elseif e < 0 then
-    e = #var + e
-  end
-  
-  if s == 0 and e == #var then
-    do return var end
-  end
+    if not s then
+        s = 0
+    end
 
-  for i=s+1, e do
-    t[#t+1] = var[i]
-  end
-  
-  return t
+    if not e then
+        e = #var
+    elseif e < 0 then
+        e = #var + e
+    end
+
+    if s == 0 and e == #var then
+        do return var end
+    end
+
+    for i=s+1, e do
+        t[#t+1] = var[i]
+    end
+
+    return t
 end
 
 ---
 function slugify(var, arg)
-  return var:lower():gsub(" ", "-")
+    return var:lower():gsub(" ", "-")
 end
 
 ---
 function time(var, arg)
-  arg = arg or leslie.settings.TIME_FORMAT
+    arg = arg or leslie.settings.TIME_FORMAT
 
-  return os.date(leslie.utils.time_format_convert(arg), var)
+    return os.date(leslie.utils.time_format_convert(arg), var)
 end
 
 ---
 function upper(var)
-  return var:upper()
+    return var:upper()
 end
 
 local register_filter = leslie.parser.register_filter
