@@ -45,7 +45,6 @@ function ExtendsNode:initialize(nodelist, parent_name)
     self.nodelist = nodelist
     self.name = parent_name
     self.blocks = {}
-
     for pos, node in nodelist:findByType(BlockNode) do
         self.blocks[node.name] = node
     end
@@ -55,19 +54,16 @@ end
 function ExtendsNode:render(context)
     local name = context:evaluate(self.name)
     local template = leslie.loader(name)
-    print('go---->',name, template)
+
+
     for pos, node, parent in template.nodelist:findByType(BlockNode) do
-        print('\tssssssssaa',node.name, self.blocks[node.name])
         if self.blocks[node.name] then
-            print('\t\tVVVVVVVVVV',node.name, pos)
             parent.nodes[pos] = self.blocks[node.name]
+            
         end
-        if self.blocks[node.name] == nil then
-            print('\t\tAAAAAAAAA',node.name, pos)
-            self.blocks[node.name] = node
-        end
+        self.blocks[node.name] = node
     end
-    print('HHHHHHHHHHH')
+
     return template:render(context)
 end
 

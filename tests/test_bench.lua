@@ -720,9 +720,6 @@ end
 function TestExtendsNode:test_render2()
     local t = leslie.Template([[{% extends base %}{% block head %}{{ title }}{% endblock %}]])
     assertEquals(t:render({title="Leslie template", base="base.txt"}), "Leslie template")
-
-    local t = leslie.Template([[{% extends "base.txt" %}{% block meta %}Author: Gregor Mazovec{% endblock %}]])
-    assertEquals(t:render({title="Leslie template"}), "Leslie template\nAuthor: Gregor Mazovec")
 end
 
 TestBlockNode = {}
@@ -748,7 +745,6 @@ function TestIncludeNode:setUp() end
 function TestIncludeNode:test_render()
     local t = leslie.Template([[{% include "template.txt" %}]])
     assertEquals(t:render({name="Leslie"}), "Hello Leslie!\n")
-    assertEquals(t:render({name="CCCC"}), "Hello CCCC!\n")
 end
 
 function TestIncludeNode:test_render2()
@@ -926,4 +922,176 @@ TestFunctions = LuaUnit.wrapFunctions(
 "test_ssi_include3"
 )
 
-LuaUnit:run()
+--LuaUnit:run()
+
+function run()
+    TestForNode:setUp()
+    TestForNode:test_args()
+    TestForNode:setUp()
+    TestForNode:test_loopvars()
+    TestForNode:setUp()
+    TestForNode:test_render()
+    TestForNode:setUp()
+    TestForNode:test_render_empty()
+    TestForNode:setUp()
+    TestForNode:test_unpack_list_parse()
+    TestIfNotEqualNode:setUp()
+    TestIfNotEqualNode:test_render_false()
+    TestIfNotEqualNode:setUp()
+    TestIfNotEqualNode:test_render_false2()
+    TestIfNotEqualNode:setUp()
+    TestIfNotEqualNode:test_render_true()
+    TestIfNotEqualNode:setUp()
+    TestIfNotEqualNode:test_render_true2()
+    
+--    TestFunctions:test_loader()
+--    
+--    TestFunctions:test_register_tag()
+--    
+--    TestFunctions:test_register_tag2()
+--    
+--    TestFunctions:test_scope()
+--    
+--    TestFunctions:test_scope2()
+--    
+--    TestFunctions:test_ssi_include()
+--    
+--    TestFunctions:test_ssi_include2()
+--    
+--    TestFunctions:test_ssi_include3()
+    TestTemplate:setUp()
+    TestTemplate:test_render()
+    TestTemplate2:setUp()
+    TestTemplate2:test_render()
+    TestFirstOfNode:setUp()
+    TestFirstOfNode:test_render()
+    TestFirstOfNode:setUp()
+    TestFirstOfNode:test_render2()
+    TestFirstOfNode:setUp()
+    TestFirstOfNode:test_render3()
+    TestFirstOfNode:setUp()
+    TestFirstOfNode:test_render4()
+    TestFirstOfNode:setUp()
+    TestFirstOfNode:test_render5()
+    TestFirstOfNode:setUp()
+    TestFirstOfNode:test_render6()
+    TestTemplateTagNode:setUp()
+    TestTemplateTagNode:test_tag1()
+    TestTemplateTagNode:setUp()
+    TestTemplateTagNode:test_tag2()
+    TestTemplateTagNode:setUp()
+    TestTemplateTagNode:test_tag3()
+    TestTemplateTagNode:setUp()
+    TestTemplateTagNode:test_tag4()
+    TestTemplateTagNode:setUp()
+    TestTemplateTagNode:test_tag5()
+    TestTemplateTagNode:setUp()
+    TestTemplateTagNode:test_tag6()
+    TestTemplateTagNode:setUp()
+    TestTemplateTagNode:test_tag7()
+    TestTemplateTagNode:setUp()
+    TestTemplateTagNode:test_tag8()
+    TestIncludeNode:setUp()
+    TestIncludeNode:test_render()
+    TestIncludeNode:setUp()
+    TestIncludeNode:test_render2()
+    TestExtendsNode:setUp()
+    TestExtendsNode:test_render()
+    TestExtendsNode:setUp()
+    TestExtendsNode:test_render2()
+    TestWithNode:setUp()
+    TestWithNode:test_render()
+    TestIfEqualNode:setUp()
+    TestIfEqualNode:test_render_false()
+    TestIfEqualNode:setUp()
+    TestIfEqualNode:test_render_false2()
+    TestIfEqualNode:setUp()
+    TestIfEqualNode:test_render_true()
+    TestIfEqualNode:setUp()
+    TestIfEqualNode:test_render_true2()
+    TestVariableNode:setUp()
+    TestVariableNode:test_render()
+    TestVariableNode:setUp()
+    TestVariableNode:test_render_booltype()
+    TestVariableNode:setUp()
+    TestVariableNode:test_render_empty()
+    TestVariableNode:setUp()
+    TestVariableNode:test_render_filter()
+    TestVariableNode:setUp()
+    TestVariableNode:test_render_numbertype()
+    TestTextNode:setUp()
+    TestTextNode:test_render()
+    
+    TestNode:test_render()
+    
+    TestContext:test_evaluate()
+    
+    TestContext:test_evaluate2()
+    
+    TestContext:test_evaluate3()
+    
+    TestContext:test_evaluate4()
+    
+    TestContext:test_evaluate5_empty()
+    
+    TestContext:test_evaluate6_empty()
+    
+    TestContext:test_filter()
+    
+    TestContext:test_filter2()
+    TestIfNode:setUp()
+    TestIfNode:test_render_false()
+    TestIfNode:setUp()
+    TestIfNode:test_render_true()
+    TestParser2:setUp()
+    TestParser2:test_skip_past()
+    TestParser2:setUp()
+    TestParser2:test_skip_past_error()
+    TestLexer:setUp()
+    TestLexer:test_tokenize()
+    TestLexer:setUp()
+    TestLexer:test_tokenize_comments()
+    TestLexer:setUp()
+    TestLexer:test_tokenize_comments2()
+    TestLexer:setUp()
+    TestLexer:test_whitespace_trim()
+    
+    TestConditions:test_basic()
+    
+    TestConditions:test_equal()
+    TestParser:setUp()
+    TestParser:test_delete_first_token()
+    TestParser:setUp()
+    TestParser:test_next_token()
+    TestParser:setUp()
+    TestParser:test_parse()
+    TestParser:setUp()
+    TestParser:test_prepend_token()
+    TestNodeList:setUp()
+    TestNodeList:test_extend()
+    TestNodeList:setUp()
+    TestNodeList:test_nodelist()
+    TestNodeList:setUp()
+    TestNodeList:test_render()
+    
+    TestCommentNode:test_render()
+    TestBlockNode:setUp()
+    TestBlockNode:test_render()
+    TestBlockNode:setUp()
+    TestBlockNode:test_render2()
+--    print('sdfasd')
+end
+
+function main()
+    local start = os.clock()
+    local max = 1000
+    for i = 1,max do
+        run()
+    end
+    print('80===>用时4.008')
+    print('90===>用时4.63')
+    print('1000 ===>用时-->35.454')
+    print(max, '===>current 用时-->', os.clock() - start)
+end
+
+main()

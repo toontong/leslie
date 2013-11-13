@@ -10,49 +10,19 @@ module("leslie", package.seeall)
 
 version = "0.3b-pre"
 
-function shallowcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in pairs(orig) do
-            copy[orig_key] = orig_value
-        end
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
-function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
 
 class("Template", _M)
 
 ---
 function Template:initialize(template)
-
     local lexer = leslie.parser.Lexer()
     local parser = leslie.parser.Parser(lexer:tokenize(template))
-
     self.nodelist = parser:parse()
+    self.done_render = false
 end
 
 ---
 function Template:render(context)
-
     if context.instanceof == nil or
     not context:instanceof(Context) then
         context = Context(context)
@@ -61,12 +31,19 @@ function Template:render(context)
     return self.nodelist:render(context)
 end
 
+-- return an shallowcopy Template object
+function Template:copy()
+    local templ = Template('')
+    templ.nodelist = self.nodelist:copy()
+    return templ
+end
+
 class("Context", _M)
 
 ---
 function Context:initialize(t)
     -- add the value copy by toontong
-    self.context = shallowcopy(t) or {}
+    self.context = leslie.utils.shallowcopy(t) or {}
 end
 
 ---
@@ -136,11 +113,13 @@ function Context:filter(filter)
     return Context(new[last])
 end
 
-local _all_templ = {}
+local _TEMPL_CACHED = {}
 ---
 function loader(filename)
-    if _all_templ[tostring(filename)] ~= nil then
-        return _all_templ[tostring(filename)]
+    local templ_cache_key = tostring(filename) 
+    if _TEMPL_CACHED[templ_cache_key] ~= nil then
+        -- use the value copy for cached.
+        return _TEMPL_CACHED[templ_cache_key]:copy()
     end
 
     local file, err
@@ -158,6 +137,6 @@ function loader(filename)
         error(err)
     end
 
-    _all_templ[tostring(filename)] = Template(file:read("*a"))
-    return _all_templ[tostring(filename)]
+    _TEMPL_CACHED[templ_cache_key] = Template(file:read("*a"))
+    return _TEMPL_CACHED[templ_cache_key]
 end

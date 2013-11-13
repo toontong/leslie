@@ -110,6 +110,13 @@ function NodeList:initialize()
     self.nodes = {}
 end
 
+-- return an shallowcopy NodeList object
+function NodeList:copy()
+    local newList = NodeList()
+    newList.nodes = leslie.utils.shallowcopy(self.nodes)
+    return newList
+end
+
 ---
 function NodeList:findByType(type)
     return findByType(self, type)
@@ -161,7 +168,6 @@ function Parser:parse(parse_until)
             nodelist:extend(node)
         elseif token.token_type == TOKEN_BLOCK then
             local command = token:split_contents()[1]
-            
             for _, until_command in ipairs(parse_until) do
                 if command == until_command then
                     self:prepend_token(token)
@@ -173,6 +179,8 @@ function Parser:parse(parse_until)
             assert(compile_func, "tag '" .. command .. "' unknown.")
             local node = compile_func(self, token)
             nodelist:extend(node)
+        else
+            print('************ never here **********')
         end
     end
 
